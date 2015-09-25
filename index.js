@@ -1,6 +1,5 @@
 var util = require('util')
     , azu = require('azure')
-    , cfg = require('./config')
     , exports = module.exports;
 
 /* GET container content listing.
@@ -28,7 +27,7 @@ var util = require('util')
  properties reference
  https://msdn.microsoft.com/en-us/library/azure/dd179394.aspx
  */
-var getContentFromContainer = function(container, prefix, continuationToken, options, callBack){
+var getContentFromContainer = function(cfg, container, prefix, continuationToken, options, callBack){
 
     if (typeof callBack !== 'function') {
         throw new Error('Parameter callBack for function getContentFromContainer should be a function: '+ arguments );

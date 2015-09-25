@@ -56,7 +56,7 @@ describe('List Container', function () {
                 , prefix = '';
             var options = {maxResults:querySize};
 
-            container.getContentFromContainer(cfg.storage.container,
+            container.getContentFromContainer(cfg, cfg.storage.container,
                 prefix,
                 null,
                 options,
@@ -78,7 +78,7 @@ describe('List Container', function () {
                 , prefix = '';
             var options = {maxResults:querySize};
 
-            container.getContentFromContainer(cfg.storage.container,prefix,
+            container.getContentFromContainer(cfg, cfg.storage.container,prefix,
                 null,
                 options,
                 function (err, blobs, continuationToken){
@@ -101,7 +101,7 @@ describe('List Container', function () {
                 , prefix = '';
             var options = {maxResults:querySize};
 
-            container.getContentFromContainer(cfg.storage.container,prefix,
+            container.getContentFromContainer(cfg, cfg.storage.container,prefix,
                 contToken,
                 options,
                 function (err, blobs, continuationToken){
@@ -123,7 +123,7 @@ describe('List Container', function () {
 
             var options = { maxResults:querySize};
 
-            container.getContentFromContainer(cfg.storage.container,
+            container.getContentFromContainer(cfg, cfg.storage.container,
                 prefix,
                 null,
                 options,
