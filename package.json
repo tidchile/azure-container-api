@@ -1,0 +1,17 @@
+{
+  "name": "azure-container-api",
+  "version": "0.0.1",
+  "description": "Get's container list from Azure API",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha tests/"
+  },
+  "author": "Carlos Guerrero <guerrerocarlos@gmail.com>",
+  "license": "ISC",
+  "devDependencies": {
+    "chai": "^3.3.0"
+  },
+  "dependencies": {
+    "azure": "^0.10.6"
+  }
+}
