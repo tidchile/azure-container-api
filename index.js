@@ -1,6 +1,9 @@
-var util = require('util')
-    , azu = require('azure')
+'use strict';
+var azu = require('azure')
+    , cfg = require('./config')
+    , constants = require('./constants')
     , exports = module.exports;
+
 
 /* GET container content listing.
 
@@ -27,44 +30,145 @@ var util = require('util')
  properties reference
  https://msdn.microsoft.com/en-us/library/azure/dd179394.aspx
  */
-var getContentFromContainer = function(cfg, container, prefix, continuationToken, options, callBack){
+var getContentFromContainer = function(container, prefix, continuationToken, options, callback){
 
-    if (typeof callBack !== 'function') {
-        throw new Error('Parameter callBack for function getContentFromContainer should be a function: '+ arguments );
+    if (typeof callback !== 'function') {
+        throw new Error("Parameter `callback' for function getContentFromContainer should be a function:"  + arguments);
     }
+    console.log(prefix);
+    options.querySize = options.querySize || 25;
+    //options.delimiter = options.delimiter || '/';
 
     var blobSvc = azu.createBlobService(cfg.storage.account, cfg.storage.accessKey)
         , blobs = [];
 
     var aggregateBlobs = function(err, result, response) {
         if (err){
-            callBack(err, null, null);
+            callback(err, null, null);
         }else{
             blobs = blobs.concat(result.entries);
             var isComplete = (options && options.maxResults && (blobs.length >= options.maxResults));
             if (null !== result.continuationToken && !isComplete) {
-                blobSvc.listBlobsSegmented(
-                    CONTAINER,
-                    result.continuationToken,
-                    options,
-                    function (error, blockListResult, response) { aggregateBlobs(error, blockListResult, response); });
+                blobSvc.listBlobsSegmentedWithPrefix(container, prefix, result.continuationToken, options,
+                    aggregateBlobs) ;
             }else{
-                callBack(null, blobs, result.continuationToken);
+                callback(null, blobs, result.continuationToken);
             }
         }
-        return;
+        //return;
+    };
+
+    blobSvc.listBlobsSegmentedWithPrefix(container, prefix, continuationToken, options, aggregateBlobs);
+
+    //return;
+};
+
+
+var normalizeArgs = function(option, callback){
+
+    var sep = '/';
+    if (null==option) option  = {};
+    option.path='';
+    if (null!=option.date){
+        if (null != option.date.year) option.path += option.date.year + sep;
+        if (null != option.date.month) option.path += option.date.month + sep;
+        if (null != option.date.day) option.path += option.date.day + sep;
     }
+    callback(option);
+};
 
-    blobSvc.listBlobsSegmentedWithPrefix(
-        container,
-        prefix,
-        continuationToken,
-        options,
-        function(err, result, response) {
-            aggregateBlobs(err, result, response); }
-    );
 
-    return;
-}
+var getContentFromCdrData = function(container, continuationToken, options, callback ) {
+    normalizeArgs(options, function (o){ options = o; });
+    getContentFromContainer(container, constants.Prefix.CDR_DATA + options.path, continuationToken, options, callback);
+};
+
+var getContentFromCdrSms = function(container, continuationToken, options, callback ) {
+    normalizeArgs(options, function (o){ options = o; });
+    getContentFromContainer(container, constants.Prefix.CDR_SMS + options.path, continuationToken, options, callback);
+};
+
+var getContentFromCdrMms = function(container, continuationToken, options, callback ) {
+    normalizeArgs(options, function (o){ options = o; });
+    getContentFromContainer(container, constants.Prefix.CDR_MMS + options.path, continuationToken, options, callback);
+};
+
+var getContentFromCdrVoice = function(container, continuationToken, options, callback ) {
+    normalizeArgs(options, function (o){ options = o; });
+    getContentFromContainer(container, constants.Prefix.CDR_VOICE + options.path, continuationToken, options, callback);
+};
+
+
+var getContentFromTransantiago = function(container, continuationToken, options, callback ) {
+    normalizeArgs(options, function (o){ options = o; });
+    console.log(options);
+    getContentFromContainer(container, constants.Prefix.TRANSANTIAGO + options.path.replace(/\//g,''),
+        continuationToken, options, callback);
+};
+
+var getContentFromClimaTemperatura = function(container, continuationToken, options, callback ) {
+    if (null!=option &&  null!=option.date && null!=option.date.day)
+        option.date.day=null;
+    normalizeArgs(options, function (o){ options = o; });
+
+    getContentFromContainer(container, constants.Prefix.DMC_TEMPERATURA + options.path, continuationToken, options, callback);
+};
+
+var getContentFromClimaAguaCaida = function(container, continuationToken, options, callback ) {
+    if (null!=option &&  null!=option.date && null!=option.date.day)
+        option.date.day=null;
+    normalizeArgs(options, function (o){ options = o; });
+    getContentFromContainer(container, constants.Prefix.DMC_AGUACAIDA + options.path, continuationToken, options, callback);
+};
+
+var getContentFromClimaRadiacion = function(container, continuationToken, options, callback ) {
+    if (null!=option &&  null!=option.date && null!=option.date.day)
+        option.date.day=null;
+    normalizeArgs(options, function (o){ options = o; });
+    getContentFromContainer(container, constants.Prefix.DMC_RADIACION + options.path, continuationToken, options, callback);
+};
+
+var getContentFromCLimaViento = function(container, continuationToken, options, callback ) {
+    if (null!=option &&  null!=option.date && null!=option.date.day)
+        option.date.day=null;
+    normalizeArgs(options, function (o){ options = o; });
+    getContentFromContainer(container, constants.Prefix.DMC_VIENTO + options.path, continuationToken, options, callback);
+};
+
+var getContentFromClimaPresionHumedad = function(container, continuationToken, options, callback ) {
+    if (null!=option &&  null!=option.date && null!=option.date.day)
+        option.date.day=null;
+    normalizeArgs(options, function (o){ options = o; });
+    getContentFromContainer(container, constants.Prefix.DMC_PRESION_HUMEDAD + options.path, continuationToken, options, callback);
+};
+
+var getContentFromCellLte = function(container, continuationToken, options, callback ) {
+    // TODO check final path
+    normalizeArgs(options, function (o){ options = o; });
+    getContentFromContainer(container, constants.Prefix.CELL_LTE + options.path, continuationToken, options, callback);
+};
+
+var getContentFromCellGsm = function(container, continuationToken, options, callback ) {
+    // TODO check final path
+    normalizeArgs(options, function (o){ options = o; });
+    getContentFromContainer(container, constants.Prefix.CELL_GSM + options.path, continuationToken, options, callback);
+};
+
+
+
 
 exports.getContentFromContainer = getContentFromContainer;
+exports.getContentFromCdrData = getContentFromCdrData;
+exports.getContentFromCdrSms = getContentFromCdrSms;
+exports.getContentFromCdrMms = getContentFromCdrMms;
+exports.getContentFromCdrVoice = getContentFromCdrVoice;
+exports.getContentFromTransantiago = getContentFromTransantiago;
+
+exports.getContentFromClimaTemperatura = getContentFromClimaTemperatura;
+exports.getContentFromClimaAguaCaida = getContentFromClimaAguaCaida;
+exports.getContentFromClimaRadiacion = getContentFromClimaRadiacion;
+exports.getContentFromCLimaViento = getContentFromCLimaViento;
+exports.getContentFromClimaPresionHumedad = getContentFromClimaPresionHumedad;
+
+exports.getContentFromCellLte = getContentFromCellLte;
+exports.getContentFromCellGsm = getContentFromCellGsm;
