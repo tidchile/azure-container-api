@@ -4,12 +4,13 @@
   "description": "Get's container list from Azure API",
   "main": "index.js",
   "scripts": {
-    "test": "mocha tests/"
+    "test": "NODE_ENV=test mocha"
   },
   "author": "Carlos Guerrero <guerrerocarlos@gmail.com>",
   "license": "ISC",
   "devDependencies": {
-    "chai": "^3.3.0"
+    "chai": "^3.3.0",
+    "mocha": "^2.3.3"
   },
   "dependencies": {
     "azure": "^0.10.6"
