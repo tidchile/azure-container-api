@@ -2,10 +2,8 @@ process.env.NODE_ENV = 'test'
 
 var cfg = require('../config/');
 var container = require('../');
-var chai = require('chai')
-    , expect = chai.expect
-    , should = chai.should()
-    , assert = chai.assert;
+var chai = require('chai');
+var expect = chai.expect;
 
 /*
  container: test
@@ -30,112 +28,79 @@ var chai = require('chai')
 
 describe('List Container', function () {
 
-    describe("getListContainer", function() {
+    describe("getListContainer (" + cfg.storage.container + ")", function() {
 
+        it("should get list 15 blobs from container", function(done){
+         // this.timeout(20000);
+          var querySize = 25;
+          var options = {
+            storage: cfg.storage,
+            maxResults: querySize
+          };
 
-        var callback = function (err, blobs, continuationToken){
-            // TODO por que no es invocada?
-            var result = null;
-            if (err) {
-                console.error("Couldn't list blobs");
-                console.error(err);
-                result = { isSuccessful: false, error: err };
-            } else {
-                result = { isSuccessful: true, entries: blobs, continuationToken: continuationToken };
-            }
-            console.log('before every test in every file');
-            return;
-        };
-
-
-        it("should get list 15 blobs from container: " + cfg.storage.container, function(callback){
-           // this.timeout(20000);
-            var querySize =  25
-                , nextMarker =  null
-                , targetLocation =  0
-                , prefix = '';
-            var options = {maxResults:querySize};
-
-            container.getContentFromContainer(cfg.storage,
-                prefix,
-                null,
-                options,
-                function (err, blobs, continuationToken){
-                    should.not.exist(err);
-                    should.not.exist(continuationToken);
-                    expect(blobs).to.be.a('array');
-                    expect(blobs).to.have.length(15);
-
-                    callback(err, blobs, continuationToken);//Test Goes Here // TODO el llamado al callback no se hace
-                });
-        });
-        var contToken=null;
-        it("should get list 8 of blobs from container: " + cfg.storage.container, function(callback){
-            // this.timeout(20000);
-            var querySize =  8
-                , nextMarker =  null
-                , targetLocation =  0
-                , prefix = '';
-            var options = {maxResults:querySize};
-
-            container.getContentFromContainer(cfg.storage, prefix,
-                null,
-                options,
-                function (err, blobs, continuationToken){
-                    should.not.exist(err);
-                    should.exist(continuationToken);
-                    expect(blobs).to.be.a('array');
-                    expect(blobs).to.have.length(8);
-                    contToken = continuationToken;
-
-                    callback(err, blobs, continuationToken);//Test Goes Here // TODO el llamado al callback no se hace
-
-                });
+          container.getContentFromContainer(options)
+          .then(function(result) {
+            expect(result.continuationToken).to.not.exist;
+            expect(result.blobs).to.be.a('array');
+            expect(result.blobs).to.have.length(15);
+            done();
+          })
+          .catch(done);
         });
 
-        it("should get list 7 of blobs from container: " + cfg.storage.container, function(callback){
-            // this.timeout(20000);
-            var querySize =  8
-                , nextMarker =  null
-                , targetLocation =  0
-                , prefix = '';
-            var options = {maxResults:querySize};
+        it("should get list 8 of blobs from container", function(done) {
+          // this.timeout(20000);
+          var querySize = 8;
+          var options = {
+            storage: cfg.storage,
+            maxResults: querySize
+          };
 
-            container.getContentFromContainer(cfg.storage, prefix,
-                contToken,
-                options,
-                function (err, blobs, continuationToken){
-                    should.not.exist(err);
-                    should.not.exist(continuationToken);
-                    expect(blobs).to.be.a('array');
-                    expect(blobs).to.have.length(7);
-                    callback(err, blobs, continuationToken);//Test Goes Here // TODO el llamado al callback no se hace
-
-                });
+          container.getContentFromContainer(options)
+          .then(function(result) {
+            expect(result.continuationToken).to.exist;
+            expect(result.blobs).to.be.a('array');
+            expect(result.blobs).to.have.length(querySize);
+            done();
+          })
+          .catch(done);
         });
 
-        it("should get list with prefix of blobs from container: " + cfg.storage.container, function(callback){
-            // this.timeout(20000);
-            var querySize =  25
-                , nextMarker =  null
-                , targetLocation =  0
-                , prefix = 'filename--';
+        it("should get list 7 of blobs from container", function(done) {
+          // this.timeout(20000);
+          var querySize = 8;
+          var options = {
+            storage: cfg.storage,
+            maxResults: querySize
+          };
 
-            var options = { maxResults:querySize};
+          container.getContentFromContainer(options)
+          .then(function(result) {
+            expect(result.continuationToken).to.not.exist;
+            expect(result.blobs).to.be.a('array');
+            expect(result.blobs).to.have.length(7);
+            done();
+          })
+          .catch(done);
+        });
 
-            container.getContentFromContainer(cfg.storage,
-                prefix,
-                null,
-                options,
-                function (err, blobs, continuationToken){
+        it("should get list with prefix of blobs from container", function(done) {
+          // this.timeout(20000);
+          var querySize =  25;
+          var options = {
+            prefix: 'filename--',
+            storage: cfg.storage,
+            maxResults: querySize
+          };
 
-                    should.not.exist(err);
-                    should.not.exist(continuationToken);
-                    expect(blobs).to.be.a('array');
-                    expect(blobs).to.have.length(9);
-
-                    callback(err, blobs, continuationToken);//Test Goes Here // TODO el llamado al callback no se hace
-                });
+          container.getContentFromContainer(options)
+          .then(function(result) {
+            expect(result.continuationToken).to.not.exist;
+            expect(result.blobs).to.be.a('array');
+            expect(result.blobs).to.have.length(9);
+            done();
+          })
+          .catch(done);
         });
     });
 });
