@@ -1,6 +1,14 @@
 'use strict';
 var azu = require('azure');
 var constants = require('./constants');
+var cfg = require('../config/');
+var parameters = cfg.param;
+var AdalNode = require('adal-node');
+var azure = require('azure');
+
+var authorityUrl = parameters.authorityHostUrl + '/' + parameters.tenant;
+var ctx = new  AdalNode.AuthenticationContext(authorityUrl),
+    resource ='https://management.core.windows.net/';
 
 /* GET container content listing.
 
@@ -92,7 +100,138 @@ function normalizeArgs(options) {
   }
   return options;
 }
+/*
+ TokenCloudCredentials
+{
+  subscriptionId: 'd837e441-5fc9-4d50-a01b-999999999999',
+  credentials:
+    { subscriptionId: 'd837e441-5fc9-4d50-a01b-999999999',
+      token: '<TOKEN>',
+      authorizationScheme: 'Bearer'
+     }
+}
+*/
+var getTokenCloudCredentials = function(subscriptionId){
+  return new Promise(function(resolve, reject) {
+
+    ctx.acquireTokenWithUsernamePassword(resource,parameters.username, parameters.password, parameters.appId, function(err, tokenResponse) {
+      if (err) {
+        console.error('Oops, well that did not work: ' + err.stack);
+        reject(Error(err.message));
+      } else {
+        var credential = new azure.TokenCloudCredentials({subscriptionId: subscriptionId,token:tokenResponse.accessToken});
+        resolve(credential);
+      }
+    });
+  });
+};
+
+/*
+{ roleSizes:
+    [ { name: 'A10',
+      label: 'A10 (8 cores, 57344 MB)',
+      cores: 8,
+      memoryInMb: 57344,
+      supportedByWebWorkerRoles: true,
+      supportedByVirtualMachines: true,
+      maxDataDiskCount: 16,
+      webWorkerResourceDiskSizeInMb: 1861268,
+      virtualMachineResourceDiskSizeInMb: 391828 },
+    ... ],
+  statusCode: 200,
+  requestId: '84066f487e8638c5acd093232f4e4c64'
+ }
+*/
+
+var getRoleSize = function(subscriptionId){
+  return new Promise(function(resolve, reject) {
+
+    getTokenCloudCredentials(subscriptionId).then(function(credential) {
+      var mgmClt = azure.createManagementClient(credential);
+      mgmClt.roleSizes.list(function (err, result) {
+        if (err) {
+          console.error('Oops, well that did not work: ' + err.stack);
+          reject(Error(err));
+        } else {
+          resolve(result);
+        }
+      });
+    }).catch(function(e) {
+      debug('Oops, well that did not work: ' + e);
+      reject(Error(e));
+    });
+
+  });
+};
+
+/*
+{ locations:
+    [ { availableServices: [Object],
+      name: 'East US',
+      displayName: 'East US',
+      storageCapabilities: [Object],
+      computeCapabilities: [Object] },
+    ... ],
+  statusCode: 200,
+  requestId: 'ea2ae4557dc239d5995117f7e4734f1f'
+}
+*/
+
+
+var getLocations = function(subscriptionId){
+  return new Promise(function(resolve, reject) {
+
+    getTokenCloudCredentials(subscriptionId).then(function(credential) {
+      var mgmClt = azure.createManagementClient(credential);
+      mgmClt.locations.list(function (err, result) {
+        if (err) {
+          console.error('Oops, well that did not work: ' + err.stack);
+          reject(Error(err));
+        } else {
+          resolve(result);
+        }
+      });
+    }).catch(function(e) {
+      debug('Oops, well that did not work: ' + e);
+      reject(Error(e));
+    });
+
+  });
+};
+
+
+// get this module from cache
+var module_X = require.cache[require.resolve('azure')]
+
+var azureHDInsight = module_X.require('azure-asm-hdinsight');
+
+var getClusterList = function(subscriptionId){
+  return new Promise(function(resolve, reject) {
+
+    getTokenCloudCredentials(subscriptionId).then(function(credential) {
+      var mgmClt = azureHDInsight.createHDInsightCluster2ManagementClient("cloudServiceName",credential);
+      mgmClt.clusterManagement.list(function (err, result) {
+        if (err) {
+          console.error('Oops, well that did not work: ' + err.stack);
+          reject(Error(err));
+        } else {
+          resolve(result);
+        }
+      });
+    }).catch(function(e) {
+      debug('Oops, well that did not work: ' + e);
+      reject(Error(e));
+    });
+
+  });
+};
+
+
 
 module.exports = {
-  getContentFromContainer: getContentFromContainer
+  getContentFromContainer: getContentFromContainer,
+  getTokenCloudCredentials : getTokenCloudCredentials,
+  getRoleSize : getRoleSize,
+  getLocations : getLocations,
+  getClusterList : getClusterList
 };
