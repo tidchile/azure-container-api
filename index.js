@@ -8,7 +8,9 @@ var azure = require('azure');
 
 var authorityUrl = parameters.authorityHostUrl + '/' + parameters.tenant;
 var ctx = new  AdalNode.AuthenticationContext(authorityUrl),
-    resource ='https://management.core.windows.net/';
+    SERVICE_MANAGEMENT_URL ='https://management.core.windows.net/',
+    RESOURCE_MANAGEMENT_URL = 'https://management.azure.com/';
+;
 
 /* GET container content listing.
 
@@ -111,7 +113,7 @@ function normalizeArgs(options) {
      }
 }
 */
-var getTokenCloudCredentials = function(subscriptionId){
+var getTokenCloudCredentials = function(subscriptionId, resource){
   return new Promise(function(resolve, reject) {
 
     ctx.acquireTokenWithUsernamePassword(resource,parameters.username, parameters.password, parameters.appId, function(err, tokenResponse) {
@@ -146,7 +148,7 @@ var getTokenCloudCredentials = function(subscriptionId){
 var getRoleSize = function(subscriptionId){
   return new Promise(function(resolve, reject) {
 
-    getTokenCloudCredentials(subscriptionId).then(function(credential) {
+    getTokenCloudCredentials(subscriptionId, SERVICE_MANAGEMENT_URL).then(function(credential) {
       var mgmClt = azure.createManagementClient(credential);
       mgmClt.roleSizes.list(function (err, result) {
         if (err) {
@@ -181,7 +183,7 @@ var getRoleSize = function(subscriptionId){
 var getLocations = function(subscriptionId){
   return new Promise(function(resolve, reject) {
 
-    getTokenCloudCredentials(subscriptionId).then(function(credential) {
+    getTokenCloudCredentials(subscriptionId, SERVICE_MANAGEMENT_URL).then(function(credential) {
       var mgmClt = azure.createManagementClient(credential);
       mgmClt.locations.list(function (err, result) {
         if (err) {
@@ -199,18 +201,23 @@ var getLocations = function(subscriptionId){
   });
 };
 
-
+/*
+ { resources:
+ [ { tags: {},
+    id: '/subscriptions/d837e441-5fc9-4d50-a01b-999999999999/resourceGroups/Default-Storage-EastUS/providers/Microsoft.HDInsight/clusters/citiesresearch',
+    name: 'citiesresearch',
+    type: 'Microsoft.HDInsight/clusters',
+    location: 'eastus' },
+    ... ],
+ statusCode: 200,
+ requestId: 'f011728e-813a-43e8-9478-f180cedbfb9c' }
+ */
 // get this module from cache
-var module_X = require.cache[require.resolve('azure')]
-
-var azureHDInsight = module_X.require('azure-asm-hdinsight');
-
 var getClusterList = function(subscriptionId){
   return new Promise(function(resolve, reject) {
-
-    getTokenCloudCredentials(subscriptionId).then(function(credential) {
-      var mgmClt = azureHDInsight.createHDInsightCluster2ManagementClient("cloudServiceName",credential);
-      mgmClt.clusterManagement.list(function (err, result) {
+    getTokenCloudCredentials(subscriptionId, RESOURCE_MANAGEMENT_URL).then(function(credential) {
+      var mgmClt = azure.createResourceManagementClient(credential);
+      mgmClt.resources.list({resourceType:'Microsoft.HDInsight/clusters'},function (err, result) {
         if (err) {
           console.error('Oops, well that did not work: ' + err.stack);
           reject(Error(err));
@@ -222,7 +229,6 @@ var getClusterList = function(subscriptionId){
       debug('Oops, well that did not work: ' + e);
       reject(Error(e));
     });
-
   });
 };
 
