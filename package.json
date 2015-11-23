@@ -2,7 +2,7 @@
   "name": "azure-container-api",
   "version": "1.0.0",
   "description": "Get's container list from Azure API",
-  "main": "index.js",
+  "main": "./lib/entry.js",
   "scripts": {
     "test": "NODE_ENV=test mocha"
   },
@@ -13,7 +13,14 @@
     "mocha": "^2.3.3"
   },
   "dependencies": {
-    "azure": "^0.10.6",
-    "adal-node": "0.1.16"
+
+    "azure-common": "^0.9.13",
+    "adal-node": "0.1.16",
+    "azure-arm-resource": "0.10.3",
+    "azure-asm-storage": "0.10.1",
+    "azure-storage": "0.5.0",
+    "azure-asm-mgmt": "0.10.1",
+    "azure-asm-subscription": "0.10.1",
+    "azure-arm-commerce": ">=0.1.1"
   }
 }
