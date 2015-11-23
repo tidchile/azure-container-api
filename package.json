@@ -1,6 +1,6 @@
 {
   "name": "azure-container-api",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Get's container list from Azure API",
   "main": "./lib/entry.js",
   "scripts": {
@@ -13,7 +13,6 @@
     "mocha": "^2.3.3"
   },
   "dependencies": {
-
     "azure-common": "^0.9.13",
     "adal-node": "0.1.16",
     "azure-arm-resource": "0.10.3",
