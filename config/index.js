@@ -1,3 +1,4 @@
+'use strict';
 var env = process.env.NODE_ENV || 'development'
     , config = null;
 
@@ -11,3 +12,4 @@ try{
 }
 
 module.exports = config;
+

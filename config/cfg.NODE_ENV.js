@@ -1,20 +1,29 @@
-var config = {};
-config.azure={};
+"use stritc";
+
+var configutation  = {};
+
+configutation.azure = {};
 
 // azure storage credentials
-config.storage = {};
-config.storage.container = 'test';
-config.storage.account = 'azure-account-name-here';
-config.storage.accessKey = 'azure-storage-access-key-here';
+configutation.storage = {};
+configutation.storage.container = '<test>';
+configutation.storage.account = '<azure-account-name-here>';
+configutation.storage.accessKey = '<azure-storage-access-key-here>';
 
-config.param={
-    tenant : '<TENANT>',
-    authorityHostUrl : 'https://login.windows.net',
-    clientId : '<CLIENT_ID>',
-    username : '<USERNAME>',
-    password : '<PASSWORD>',
-    cert: 'cert.pem',
-    key: 'key.pem'
+configutation.management={
+    tenant: '<tenant name> or <tenant id>'
 
-}
-module.exports = config;
+};
+// Credential from azure active directory
+configutation.management.credentials =
+{
+    appId: '<CLIENT_ID>',
+    username: '<USERNAME>',
+    password: '<PASSWORD>'
+};
+
+module.exports = {
+
+    config: configutation
+
+};
