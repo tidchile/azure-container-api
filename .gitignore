@@ -1,2 +1,4 @@
 node_modules/
-config/cfg.test.js
+test/config/cfg.test.js
+test/config/cfg.development.js
+test/config/cfg.production.js
