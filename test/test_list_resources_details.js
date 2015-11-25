@@ -14,7 +14,8 @@ test.getServiceTokenCloudCredentials({
     console.log('getTokenCloudCredentials result:', credential );
     return test.getListResourcesDetails(credential);
 }).then(function(result) {
-    console.log('getListResourcesDetails result:', result );
+    console.log('getListResourcesDetails result:' );
+    console.log(JSON.stringify(result,null, '\t'));
 }).catch(function(e) {
     console.log(e.stack);
 });
