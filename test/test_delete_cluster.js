@@ -2,32 +2,39 @@
 
 var cfg = require('./config/');
 var test = require('../lib/entry');
-var subscriptionId = 'd837e441-5fc9-4d50-a01b-8e8690ec0a96';
+var subscriptionId = '19d81882-cd38-4a21-a41e-f87c09861195';
 
-var credential
 
+var options = {
+    clusterName : 'tidchile-borrame',
+    location: ''
+},
+credential;
 console.log('getTokenCloudCredentials');
 test.getServiceTokenCloudCredentials({
     subscriptionId: subscriptionId,
     management: cfg.management
-}).then(function(credentialResult) {
-    console.log('getTokenCloudCredentials result:', credentialResult );
-    credential = credentialResult;
-    return test.getClusterList(credential);
+}).then(function(resultCredential) {
+
+    console.log('getTokenCloudCredentials result:', resultCredential );
+
+    credential = resultCredential;
+
+
+    return Promise.resolve('jelou')//test.getCluster(credential, options.clusterName);
 }).then(function(result) {
-    console.log('getClusterList result:', result.resources );
+    console.log('getCluster result:', result );
 
-    if (result.resources.length>0){
-        var cluster = result.resources[0]
-        return test.deleteCluster(credential, cluster.name);
-    }
 
+    return test.deleteCluster(credential, options.clusterName, 'East US');
 
 }).then(function(result) {
-    console.log('deleteCluster result:');
-    console.log(JSON.stringify(result,null, '\t'));
-
-
+    console.log('deleteCluster result:', result );
+    /*setInterval(function(){
+        test.getCluster(credential, options.clusterName).then(function(result){
+            console.log(result);
+        })
+    }, 10000)*/
 }).catch(function(e) {
     console.log(e.stack);
 });

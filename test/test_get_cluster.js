@@ -2,7 +2,7 @@
 
 var cfg = require('./config/');
 var test = require('../lib/entry');
-var subscriptionId = 'd837e441-5fc9-4d50-a01b-8e8690ec0a96';
+var subscriptionId = '19d81882-cd38-4a21-a41e-f87c09861195';
 
 var credential
 
@@ -15,11 +15,15 @@ test.getServiceTokenCloudCredentials({
     credential = credentialResult;
     return test.getClusterList(credential);
 }).then(function(result) {
-    console.log('getClusterList result:', result.resources );
+    console.log('getClusterList result:' );
+
+console.log(JSON.stringify(result));
+
 
     if (result.resources.length>0){
-        var cluster = result.resources[0]
-        return test.getCluster(credential, cluster.name);
+    console.log("+++ "+result.resources[0].resource.name);
+     return test.getCluster(credential, result.resources[0].resource.name)
+
     }
 
 
