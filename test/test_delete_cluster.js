@@ -6,7 +6,7 @@ var subscriptionId = '19d81882-cd38-4a21-a41e-f87c09861195';
 
 
 var options = {
-    clusterName : 'tidchile-borrame',
+    clusterName : 'tidnode-ibex',
     location: ''
 },
 credential;
