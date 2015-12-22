@@ -1,4 +1,4 @@
-process.env.NODE_ENV = 'test'
+process.env.NODE_ENV = 'test';
 
 var cfg = require('./config/');
 var container = require('../');
@@ -26,11 +26,11 @@ var expect = chai.expect;
 **/
 
 
-describe.skip('List Container', function () {
+describe.skip('List Container', function() {
 
     describe("getListContainer (" + cfg.storage.container + ")", function() {
 
-        it("should get list 15 blobs from container", function(done){
+        it("should get list 15 blobs from container", function(done) {
          // this.timeout(20000);
           var querySize = 25;
           var options = {

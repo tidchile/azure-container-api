@@ -8,7 +8,7 @@ configuration.storage.container = '<test>';
 configuration.storage.account = '<azure-account-name-here>';
 configuration.storage.accessKey = '<azure-storage-access-key-here>';
 
-configuration.management={
+configuration.management = {
     tenant: '<tenant name> or <tenant id>'
 
 };

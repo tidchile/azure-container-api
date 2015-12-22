@@ -10,31 +10,24 @@ var options = {
     location: ''
 },
 credential;
-console.log('getTokenCloudCredentials');
+// console.log('getTokenCloudCredentials');
 test.getServiceTokenCloudCredentials({
     subscriptionId: subscriptionId,
     management: cfg.management
 }).then(function(resultCredential) {
-
-    console.log('getTokenCloudCredentials result:', resultCredential );
-
+    // console.log('getTokenCloudCredentials result:', resultCredential );
     credential = resultCredential;
-
-
-    return Promise.resolve('jelou')//test.getCluster(credential, options.clusterName);
+    return Promise.resolve('jelou'); //test.getCluster(credential, options.clusterName);
 }).then(function(result) {
-    console.log('getCluster result:', result );
-
-
+    // console.log('getCluster result:', result );
     return test.deleteCluster(credential, options.clusterName, 'East US');
-
 }).then(function(result) {
-    console.log('deleteCluster result:', result );
-    /*setInterval(function(){
-        test.getCluster(credential, options.clusterName).then(function(result){
+    // console.log('deleteCluster result:', result );
+    /*setInterval(function() {
+        test.getCluster(credential, options.clusterName).then(function(result) {
             console.log(result);
         })
     }, 10000)*/
 }).catch(function(e) {
-    console.log(e.stack);
+    // console.log(e.stack);
 });

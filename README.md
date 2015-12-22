@@ -27,7 +27,7 @@ const options = {
   date: { year: 2013, month: 7, day: 27 },
 };
 
-container.getContentFromContainer(storage, prefix, continuationToken, options, function (err, blobs, continuationToken) {
+container.getContentFromContainer(storage, prefix, continuationToken, options, function(err, blobs, continuationToken) {
 
   /*  blobs: array of entries:
 
