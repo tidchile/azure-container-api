@@ -2,3 +2,4 @@ node_modules/
 test/config/cfg.test.js
 test/config/cfg.development.js
 test/config/cfg.production.js
+.idea/
